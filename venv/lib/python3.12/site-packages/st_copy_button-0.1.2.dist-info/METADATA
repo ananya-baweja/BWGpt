@@ -1,0 +1,52 @@
+Metadata-Version: 2.1
+Name: st-copy-button
+Version: 0.1.2
+Summary: A simple Streamlit component for copying text to the user's clipboard with one click.
+Home-page: https://gitlab.com/james.young2/st-copy-button
+License: MIT
+Keywords: streamlit,component,clipboard
+Author: James Young
+Author-email: james.young@ramseysolutions.com
+Requires-Python: >=3.9.8,<4.0
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Dist: streamlit (>=1.31.0,<2.0.0)
+Project-URL: Repository, https://gitlab.com/james.young2/st-copy-button
+Description-Content-Type: text/markdown
+
+# st-copy-button
+
+A simple Streamlit component for copying text to the user's clipboard with one click.
+
+Contains portions derived from mmz-001's st-copy-to-clipboard component.
+
+## Installation instructions
+
+```sh
+pip install st-copy-button
+```
+
+## Usage instructions
+
+> Note: The clipboard API is only available in secure contexts (HTTPS)
+
+```python
+import streamlit as st
+from st_copy_button import st_copy_button
+
+# Basic usage
+st_copy_button("Copy this to clipboard")
+
+# With custom labels
+st_copy_button(
+    text="Custom text",
+    before_copy_label="📋 Push to copy",
+    after_copy_label="✅ Text copied!",
+    show_text=True
+)
+```
+

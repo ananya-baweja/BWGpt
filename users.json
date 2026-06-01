@@ -1,0 +1,12 @@
+{
+    "lmoajez@adityabirla.com": {
+        "name": "tom",
+        "password": "qwer1234",
+        "department": "IT"
+    },
+    "lalani@adityabirla.com": {
+        "name": "bill",
+        "password": "qwer1234",
+        "department": "Finance"
+    }
+}

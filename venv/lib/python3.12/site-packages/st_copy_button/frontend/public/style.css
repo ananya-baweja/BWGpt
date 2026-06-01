@@ -1,0 +1,48 @@
+body {
+  background-color: var(--background-color, rgb(255, 255, 255));
+}
+
+.st-copy-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  font-family: "Source Sans Pro", sans-serif;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  min-height: 40px;
+  margin: 0px;
+  line-height: 1.6;
+  color: var(--text-color, rgb(49, 51, 63));
+  width: auto;
+  user-select: none;
+  background-color: var(--lightened-bg05, rgb(255, 255, 255));
+  border: 1px solid rgba(var(--text-color-rgb, 49, 51, 63), 0.2);
+  cursor: pointer;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+.st-copy-button:hover {
+  border-color: var(--primary-color, rgb(255, 75, 75));
+  color: var(--primary-color, rgb(255, 75, 75));
+}
+
+.st-copy-button:active {
+  border-color: var(--primary-color, rgb(255, 75, 75));
+  background-color: var(--primary-color, rgb(255, 75, 75));
+  color: var(--lightened-bg05, rgb(255, 255, 255));
+  outline: none;
+}
+
+/* Prevents default focus outline after click */
+.st-copy-button:focus {
+  border-color: rgba(var(--text-color-rgb, 49, 51, 63), 0.2);
+  outline: none; 
+}
+
+.st-copy-button:focus:not(:active):hover {
+  border-color: var(--primary-color, rgb(255, 75, 75));
+  color: var(--primary-color, rgb(255, 75, 75));
+  background-color: var(--lightened-bg05, rgb(255, 255, 255));
+}

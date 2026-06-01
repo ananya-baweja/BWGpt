@@ -1,0 +1,44 @@
+{
+  "name": "st_copy_button",
+  "version": "0.1.2",
+  "private": true,
+  "dependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.3",
+    "color2k": "^2.0.3",
+    "react-scripts": "^5.0.1",
+    "streamlit-component-lib": "^2.0.0",
+    "typescript": "^4.9.5"
+  },
+  "overrides": {
+    "nth-check": "^2.0.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "^5.2.1",
+    "svgo": "^2.8.0",
+    "@svgr/plugin-svgo": "^6.0.0",
+    "@svgr/webpack": "^6.0.0",
+    "resolve-url-loader": "^5.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "homepage": "."
+}
