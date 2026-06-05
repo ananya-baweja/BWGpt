@@ -1,6 +1,6 @@
-# utils/helpers.py
 import re
 import streamlit as st
+import urllib.parse
 
 def validate_email(email_str):
     return email_str.strip().lower().endswith("@adityabirla.com")
@@ -30,3 +30,20 @@ def convert_df_to_csv(df):
 @st.cache_data
 def convert_df_to_tsv(df):
     return df.to_csv(index=False, sep='\t')
+
+
+def generate_outlook_link(recipient_email, subject, email_body):
+    """
+    Generates a safe mailto URL that automatically opens in the user's 
+    desktop Outlook client with pre-filled fields.
+    """
+    # Safe encoding for spaces, newlines, and special characters
+    params = {
+        "subject": subject,
+        "body": email_body
+    }
+    encoded_params = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+    
+    # Construct the final mailto string
+    mailto_url = f"mailto:{recipient_email}?{encoded_params}"
+    return mailto_url

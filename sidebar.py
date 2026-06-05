@@ -1,73 +1,30 @@
 import streamlit as st
 import audit_logger
 
-def render_sidebar(rename_dialog_func):
+def render_sidebar(rename_dialog_func, dashboard_modal_func=None):
     """
-    Renders the sidebar with a sticky header, a smoothly scrolling history, 
-    and a sticky footer locked to the bottom (Gemini-style).
+    Renders the sidebar with a fixed header, scrolling history, 
+    and a strictly bottom-pinned Teams-style profile footer.
     """
     compact_sidebar_style = """
     <style>
-    /* 1. Pull the sidebar content to the absolute edges (Fixes the "higher up" issue) */
-    [data-testid="stSidebarUserContent"] {
-        padding-top: 0rem !important;
-        padding-bottom: 0rem !important;
-    }
-
-    /* 2. STICKY HEADER (Locks BWGpt & New Chat to the top) */
-    div.stElementContainer:has(#sidebar-header) {
-        position: sticky !important;
-        top: 0px !important;
-        background-color: var(--secondary-background-color, #f0f2f6) !important;
-        z-index: 999 !important;
-        padding-top: 1.5rem !important;
-        padding-bottom: 10px !important;
-        border-bottom: 1px solid rgba(128,128,128,0.1); /* Subtle visual separator */
-    }
-
-    /* 3. STICKY FOOTER (Locks Profile & Sign Out to the absolute bottom) */
-    div.stElementContainer:has(#sidebar-footer) {
-        position: sticky !important;
-        bottom: 0px !important;
-        background-color: var(--secondary-background-color, #f0f2f6) !important;
-        z-index: 999 !important;
-        padding-top: 15px !important;
-        padding-bottom: 1.5rem !important;
-        border-top: 1px solid rgba(128,128,128,0.1); /* Subtle visual separator */
-    }
-    
-    /* 4. History container spacing */
-    div.stElementContainer:has(#sidebar-history) {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    /* Custom sleek scrollbar for the sidebar */
-    [data-testid="stSidebarUserContent"]::-webkit-scrollbar {
-        width: 4px;
-    }
-    [data-testid="stSidebarUserContent"]::-webkit-scrollbar-thumb {
-        background-color: rgba(128, 128, 128, 0.3);
-        border-radius: 4px;
-    }
-    
-    /* Reduce default sidebar width */
-    [data-testid="stSidebar"] {
-        width: 260px !important;
-        min-width: 260px !important;
-        max-width: 260px !important;
-    }
-    /* Compact styling for chat navigation rows */
     div.stButton > button[key^="switch_"] {
         padding: 4px 8px !important;
         font-size: 14px !important;
         text-align: left !important;
     }
-    /* Shrink action popover triggers */
-    div[data-testid="stPopover"] > button {
-        padding: 2px 6px !important;
-        font-size: 12px !important;
-        line-height: 1.2 !important;
+    /* Style the new Teams-style profile popover trigger */
+    div[data-testid="stPopover"]:has(button[key="profile_popover"]) > button {
+        padding: 8px 12px !important;
+        font-size: 15px !important;
+        font-weight: bold !important;
+        justify-content: flex-start !important;
+        background-color: transparent !important;
+        border: none !important;
+        color: var(--text-color) !important;
+    }
+    div[data-testid="stPopover"]:has(button[key="profile_popover"]) > button:hover {
+        background-color: rgba(128,128,128,0.1) !important;
     }
     </style>
     """
@@ -75,16 +32,17 @@ def render_sidebar(rename_dialog_func):
 
     with st.sidebar:
         
-        # -----------------------------------------
-        # 1. FIXED HEADER
-        # -----------------------------------------
+        # 1. HEADER
         header_container = st.container()
         with header_container:
-            # Invisible anchor used by CSS to glue this exact container to the top
             st.markdown("<div id='sidebar-header'></div>", unsafe_allow_html=True)
+            st.markdown("<h2 style='margin-top: -10px; margin-bottom: 5px;'>🏢 BWGpt</h2>", unsafe_allow_html=True)
             
-            st.markdown("<h2 style='margin-top: -15px; margin-bottom: 5px;'>🏢 BWGpt</h2>", unsafe_allow_html=True)
-            if st.button("➕ New Chat", use_container_width=True, key="new_chat_top_btn"):
+            # --- THE PERMANENT DASHBOARD BUTTON ---
+            if dashboard_modal_func and st.button("📊 View Live Dashboard", use_container_width=True, type="primary"):
+                dashboard_modal_func()
+                
+            if st.button("➕ New Chat", use_container_width=True, key="new_chat_top_btn", type="secondary"):
                 base_name = "New Chat"
                 new_chat_name = base_name
                 counter = 1
@@ -98,10 +56,9 @@ def render_sidebar(rename_dialog_func):
                 st.session_state.current_chat = new_chat_name
                 st.rerun() 
                 
-        # 2. SCROLLABLE HISTORY (Middle)
+        # 2. SCROLLABLE HISTORY
         history_container = st.container()
         with history_container:
-            # Invisible anchor for spacing
             st.markdown("<div id='sidebar-history'></div>", unsafe_allow_html=True)
             
             pinned = [c for c in st.session_state.pinned_chats if c in st.session_state.chats]
@@ -140,10 +97,9 @@ def render_sidebar(rename_dialog_func):
                                     st.session_state.current_chat = "New Chat"
                             st.rerun()
 
-        # 3. FIXED FOOTER (Profile & Sign Out)
+        # 3. TEAMS-STYLE PROFILE (FLEX PUSHED TO BOTTOM)
         footer_container = st.container()
         with footer_container:
-            # Invisible anchor used by CSS to glue this exact container to the bottom
             st.markdown("<div id='sidebar-footer'></div>", unsafe_allow_html=True)
             
             display_name = st.session_state.current_user
@@ -151,24 +107,18 @@ def render_sidebar(rename_dialog_func):
             display_email = st.session_state.get("current_email", "")
             initials = "".join([part[0].upper() for part in display_name.split() if part])[:2] if display_name else "U"
             
-            profile_html = f"""
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 4px;" title="Email: {display_email}">
-                <div style="background-color: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 15px;">
-                    {initials}
-                </div>
-                <div style="line-height: 1.2;">
-                    <div style="font-weight: bold; font-size: 15px; color: var(--text-color);">{display_name}</div>
-                    <div style="color: gray; font-size: 13px;">💼 {display_dept}</div>
-                </div>
-            </div>
-            """
-            st.markdown(profile_html, unsafe_allow_html=True)
-            
-            if st.button("Sign Out", type="secondary", use_container_width=True, key="logout_embedded_btn"):
-                audit_logger.log_user_logout(st.session_state.current_email, st.session_state.get("current_session_id"))
-                st.session_state.logged_in = False
-                st.session_state.current_user = "User"
-                st.session_state.current_department = ""
-                st.session_state.current_email = ""
-                st.session_state.current_session_id = None
-                st.rerun()
+            with st.popover(f"🟢 {initials} \u2002 {display_name}", use_container_width=True, key="profile_popover"):
+                st.write(f"**{display_name}**")
+                st.caption(f"📧 {display_email}")
+                st.caption(f"💼 Department: {display_dept}")
+                
+                st.divider()
+                
+                if st.button("Sign Out", type="secondary", use_container_width=True, key="logout_embedded_btn"):
+                    audit_logger.log_user_logout(st.session_state.current_email, st.session_state.get("current_session_id"))
+                    st.session_state.logged_in = False
+                    st.session_state.current_user = "User"
+                    st.session_state.current_department = ""
+                    st.session_state.current_email = ""
+                    st.session_state.current_session_id = None
+                    st.rerun()

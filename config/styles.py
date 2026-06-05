@@ -1,69 +1,121 @@
 # config/styles.py
 HIDE_ST_STYLE = """
-            <style>
-            footer {visibility: hidden;}
-            
-            /* FORCE CODE BLOCKS TO WORD-WRAP INSTEAD OF SCROLLING */
-            div[data-testid="stCodeBlock"] pre {
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-            }
+    <style>
+    footer {visibility: hidden;}
 
-            /* FORCE ALERTS AND ERROR MESSAGES TO WORD-WRAP */
-            div[data-testid="stAlert"] {
-                white-space: pre-wrap !important;
-                word-wrap: break-word !important;
-            }
-            
-            /* Un-clip the main container so sticky positioning works */
-            .main .block-container {
-                overflow: visible !important;
-                padding-bottom: 100px !important; 
-                padding-top: 1.5rem;
-            }
-            div[data-testid="InputInstructions"] {display: none;}
-            
-            /* FIX: Changed negative margin to positive to prevent table overlap! */
-            [data-testid="stDataFrame"] {margin-bottom: 1rem !important;}
-            
-            /* --- THE ELEGANT ALIGNMENT FIX --- */
-            /* 1. Set iframe container to exactly 44px */
-            iframe[title*="streamlit_mic_recorder"] {
-                height: 44px !important;
-                min-height: 44px !important;
-                margin-bottom: 0px !important; 
-                display: block !important;
-            }
+    /* FORCE CODE BLOCKS & ALERTS TO WORD-WRAP */
+    div[data-testid="stCodeBlock"] pre, div[data-testid="stAlert"] {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+    }
+    div[data-testid="InputInstructions"] {display: none;}
 
-            /* 2. Force BOTH buttons to exactly 44px */
-            div[data-testid="stPopover"] > button,
-            div.stButton > button {
-                height: 44px !important;
-                border-radius: 8px !important;
-                margin: 0px !important;
-                padding: 0px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
+    /* ========================================================= */
+    /* 1. SIDEBAR: CLEAN & SAFE LAYOUT                           */
+    /* ========================================================= */
+    /* Pushes the logo up slightly to look balanced */
+    [data-testid="stSidebarUserContent"] {
+        padding-top: 0rem !important; 
+    }
 
-            /* 3. Strip hidden padding from the columns */
-            div[data-testid="stVerticalBlock"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
+    /* ========================================================= */
+    /* 2. MAIN INPUT BAR: THE UNIFIED "PILL" DESIGN              */
+    /* ========================================================= */
+    .main .block-container {
+        padding-bottom: 130px !important; 
+    }
+    
+    div[data-testid="stHorizontalBlock"]:has([data-testid="stChatInput"]) {
+        position: fixed !important;
+        bottom: 25px !important;
+        left: calc(50% + 130px) !important;
+        transform: translateX(-50%) !important;
+        width: 95% !important;
+        max-width: 46rem !important; 
+        background-color: var(--secondary-background-color, #f0f2f6) !important;
+        border-radius: 40px !important; 
+        padding: 5px 15px !important;
+        border: 1px solid rgba(128,128,128,0.2) !important;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.05) !important;
+        align-items: center !important;
+        z-index: 9999 !important;
+    }
 
-            div[data-testid="column"]:nth-of-type(3) {display: flex; justify-content: flex-end;}
-            
-            /* PIN THE ENTIRE INPUT ROW TO THE BOTTOM OF THE SCREEN */
-            div[data-testid="stHorizontalBlock"]:has(div[data-testid="stChatInput"]) {
-                position: sticky !important;
-                bottom: 0px !important;
-                background-color: var(--background-color, white) !important;
-                z-index: 999 !important;
-                padding-bottom: 25px !important;
-                padding-top: 10px !important;
-                align-items: center !important;
-            }
-            </style>
-            """
+    div[data-testid="stHorizontalBlock"]:has([data-testid="stChatInput"]) [data-testid="column"] {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has([data-testid="stChatInput"]) div.stElementContainer {
+        margin: 0 !important; 
+    }
+
+    /* --- 1. STRIP NATIVE CHAT INPUT BULK --- */
+    div[data-testid="stChatInput"] {
+        padding: 0 !important;
+        background: transparent !important;
+    }
+    div[data-testid="stChatInput"] > div {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* --- 2. COMBINED TEXT & PLACEHOLDER RULES --- */
+    div[data-testid="stChatInput"] textarea, 
+    div[data-testid="stChatInput"] textarea::placeholder {
+        color: #000000 !important; 
+    }
+
+    /* --- 3. STYLE SEND ARROW TO MATCH MIC (WHITE CIRCLE) --- */
+    div[data-testid="stChatInput"] button {
+        background-color: #ffffff !important; 
+        border: 1px solid rgba(128,128,128,0.2) !important;
+        border-radius: 50% !important; 
+        height: 40px !important; /* Matches the 40px mic iframe */
+        width: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    div[data-testid="stChatInput"] button svg {
+        fill: #000000 !important;
+        color: #000000 !important;
+    }
+
+    /* --- FIX: FORCE MIC IFRAME TO MATCH SEND BUTTON EXACTLY --- */
+    iframe[title*="streamlit_mic_recorder"] {
+        height: 39px !important;
+        width: 40.5px !important;
+        border-radius: 8px !important; /* Crops the white background corners */
+        margin: 0 auto !important; 
+        display: block !important;
+        overflow: hidden !important; /* Hides anything spilling out */
+        border: none !important;
+        background: transparent !important;
+    }
+    
+    /* ========================================================= */
+    /* 3. FIXING THE ICONS (KILLING THE '>>' ARROWS)             */
+    /* ========================================================= */
+    [data-testid="collapsedControl"] svg,
+    button[data-testid="stSidebarCollapseButton"] svg { 
+        display: none !important;
+    }
+    
+    [data-testid="collapsedControl"]::before,
+    button[data-testid="stSidebarCollapseButton"]::before {
+        content: "///" !important; 
+        font-weight: 900 !important;
+        font-size: 1.2rem !important;
+        color: gray !important;
+        letter-spacing: -1px !important;
+        font-style: italic !important;
+        position: absolute !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+    </style>
+"""
