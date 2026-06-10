@@ -7,7 +7,7 @@ def render_custom_chart(df, chart_config):
     x_col = chart_config.get("x")
     y_col = chart_config.get("y")
     
-    st.markdown("### 📊 ad-hoc data visualization")
+    st.markdown("### ad-hoc data visualization")
     
     try:
         if chart_type == "bar":

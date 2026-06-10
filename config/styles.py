@@ -10,17 +10,13 @@ HIDE_ST_STYLE = """
     }
     div[data-testid="InputInstructions"] {display: none;}
 
-    /* ========================================================= */
-    /* 1. SIDEBAR: CLEAN & SAFE LAYOUT                           */
-    /* ========================================================= */
+    /* 1. SIDEBAR: CLEAN & SAFE LAYOUT */
     /* Pushes the logo up slightly to look balanced */
     [data-testid="stSidebarUserContent"] {
         padding-top: 0rem !important; 
     }
 
-    /* ========================================================= */
-    /* 2. MAIN INPUT BAR: THE UNIFIED "PILL" DESIGN              */
-    /* ========================================================= */
+    /* 2. MAIN INPUT BAR: THE UNIFIED "PILL" DESIGN*/
     .main .block-container {
         padding-bottom: 130px !important; 
     }
@@ -28,7 +24,7 @@ HIDE_ST_STYLE = """
     div[data-testid="stHorizontalBlock"]:has([data-testid="stChatInput"]) {
         position: fixed !important;
         bottom: 25px !important;
-        left: calc(50% + 130px) !important;
+        left: calc(50% + 70px);
         transform: translateX(-50%) !important;
         width: 95% !important;
         max-width: 46rem !important; 
@@ -36,7 +32,6 @@ HIDE_ST_STYLE = """
         border-radius: 40px !important; 
         padding: 5px 15px !important;
         border: 1px solid rgba(128,128,128,0.2) !important;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.05) !important;
         align-items: center !important;
         z-index: 9999 !important;
     }
@@ -50,29 +45,18 @@ HIDE_ST_STYLE = """
         margin: 0 !important; 
     }
 
-    /* --- 1. STRIP NATIVE CHAT INPUT BULK --- */
-    div[data-testid="stChatInput"] {
-        padding: 0 !important;
-        background: transparent !important;
-    }
-    div[data-testid="stChatInput"] > div {
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-
-    /* --- 2. COMBINED TEXT & PLACEHOLDER RULES --- */
+    /* COMBINED TEXT & PLACEHOLDER RULES */
     div[data-testid="stChatInput"] textarea, 
     div[data-testid="stChatInput"] textarea::placeholder {
         color: #000000 !important; 
     }
 
-    /* --- 3. STYLE SEND ARROW TO MATCH MIC (WHITE CIRCLE) --- */
+    /* STYLE SEND ARROW TO MATCH MIC (WHITE CIRCLE) */
     div[data-testid="stChatInput"] button {
         background-color: #ffffff !important; 
         border: 1px solid rgba(128,128,128,0.2) !important;
         border-radius: 50% !important; 
-        height: 40px !important; /* Matches the 40px mic iframe */
+        height: 40px !important; 
         width: 40px !important;
         display: flex !important;
         align-items: center !important;
@@ -82,40 +66,19 @@ HIDE_ST_STYLE = """
     div[data-testid="stChatInput"] button svg {
         fill: #000000 !important;
         color: #000000 !important;
-    }
+    } 
 
-    /* --- FIX: FORCE MIC IFRAME TO MATCH SEND BUTTON EXACTLY --- */
+    /* FIX: FORCE MIC IFRAME TO MATCH SEND BUTTON EXACTLY */
     iframe[title*="streamlit_mic_recorder"] {
         height: 39px !important;
         width: 40.5px !important;
-        border-radius: 8px !important; /* Crops the white background corners */
+        border-radius: 8px !important; 
         margin: 0 auto !important; 
         display: block !important;
-        overflow: hidden !important; /* Hides anything spilling out */
+        overflow: hidden !important; 
         border: none !important;
         background: transparent !important;
     }
     
-    /* ========================================================= */
-    /* 3. FIXING THE ICONS (KILLING THE '>>' ARROWS)             */
-    /* ========================================================= */
-    [data-testid="collapsedControl"] svg,
-    button[data-testid="stSidebarCollapseButton"] svg { 
-        display: none !important;
-    }
-    
-    [data-testid="collapsedControl"]::before,
-    button[data-testid="stSidebarCollapseButton"]::before {
-        content: "///" !important; 
-        font-weight: 900 !important;
-        font-size: 1.2rem !important;
-        color: gray !important;
-        letter-spacing: -1px !important;
-        font-style: italic !important;
-        position: absolute !important;
-        left: 14px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-    }
     </style>
 """

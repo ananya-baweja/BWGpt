@@ -9,3 +9,4 @@ __pycache__/
 
 # Secrets and local config
 .env
+.streamlit/secrets.toml

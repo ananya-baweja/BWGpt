@@ -6,22 +6,18 @@ import urllib.parse
 from st_copy_button import st_copy_button
 from streamlit_mic_recorder import speech_to_text
 
-# --- IMPORT YOUR CUSTOM MODULES ---
+# IMPORT MODULES 
 import database
 import llm
 import sidebar
 import audit_logger
-
-# --- IMPORT NEW REFACTORED MODULES ---
 from config.styles import HIDE_ST_STYLE
 from utils.helpers import validate_email, validate_password_complexity, generate_outlook_link, generate_chat_title, convert_df_to_csv, convert_df_to_tsv
 from components.auth import render_auth_ui
 from components.dashboard import render_powerbi
 from components.charts import render_custom_chart
 
-# ==========================================
-# 1. PAGE SETUP & MAGIC CSS
-# ==========================================
+# 1. PAGE SETUP & CSS
 st.set_page_config(
     page_title="BWGpt", 
     page_icon="🏢", 
@@ -29,11 +25,19 @@ st.set_page_config(
     initial_sidebar_state="expanded" 
 )
 
+if "user_db" not in st.session_state:
+    st.session_state.user_db = {
+        "admin@adityabirla.com": {
+            "password": "Password123",
+            "name": "Demo User",
+            "department": "IT"
+        }
+    }
+
 st.markdown(HIDE_ST_STYLE, unsafe_allow_html=True)
 
-# ==========================================
 # 2. STATE INITIALIZATION & CALLBACKS
-# ==========================================
+
 if "logged_in" not in st.session_state: st.session_state.logged_in = False
 if "current_session_id" not in st.session_state: st.session_state.current_session_id = None
 if "current_user" not in st.session_state: st.session_state.current_user = "User"
