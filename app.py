@@ -25,15 +25,6 @@ st.set_page_config(
     initial_sidebar_state="expanded" 
 )
 
-if "user_db" not in st.session_state:
-    st.session_state.user_db = {
-        "admin@adityabirla.com": {
-            "password": "Password123",
-            "name": "Demo User",
-            "department": "IT"
-        }
-    }
-
 st.markdown(HIDE_ST_STYLE, unsafe_allow_html=True)
 
 # 2. STATE INITIALIZATION & CALLBACKS
