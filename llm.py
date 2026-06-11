@@ -2,49 +2,6 @@ import json
 import ollama
 from datetime import datetime
 
-def check_intent(user_prompt):
-    """
-    Lightning-fast router to check if the user wants a visual/dashboard or raw data.
-    """
-    system_prompt = """
-    You are an ultra-fast intent router. Analyze the user's prompt.
-    
-    If the user asks to see a dashboard, open a report, or view a visual, respond with this EXACT JSON format:
-    {"intent": "DASHBOARD", "pbi_filter": "TableName/ColumnName eq 'Value'"}
-    
-    CRITICAL POWER BI FILTER RULES:
-    - Vendor rule: "Transactions/VendorName eq 'Vendor_Name_Here'"
-    - Department rule: "Departments/DepartmentName eq 'Department_Name_Here'"
-    - No specific filter: ""
-    
-    EXAMPLE 1:
-    User: "Show me the dashboard for Cloud Compute AWS"
-    Output: {"intent": "DASHBOARD", "pbi_filter": "Transactions/VendorName eq 'Cloud Compute AWS'"}
-    
-    If the user asks a question that requires calculating numbers, listing items, or pulling data tables, respond with:
-    {"intent": "DATA", "pbi_filter": ""}
-    
-    You MUST output ONLY valid JSON.
-    """
-   
-    try:
-        response = ollama.chat(
-            model='qwen2.5-coder:7b-instruct-q8_0',
-            messages=[
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': user_prompt}
-            ],
-            format='json'
-        )
-        
-        result = json.loads(response['message']['content'])
-        return result.get("intent", "DATA"), result.get("pbi_filter", "")
-        
-    except Exception as e:
-        print(f"Intent parsing error: {e}")
-        return "DATA", ""
-
-
 def stream_sql(user_input, schema):
     """
     Streams a translated SQL query chunk-by-chunk using a local Ollama model.
@@ -114,3 +71,45 @@ def stream_insights(user_prompt, data_string):
             
     except Exception as e:
         yield f"⚠️ Could not generate insights: {e}"
+
+
+def generate_chart_spec(user_prompt, schema):
+    """
+    Generates a clean JSON containing both the T-SQL query and chart configuration 
+    for custom native chart rendering inside the dedicated UI workspace.
+    """
+    system_prompt = f"""
+    You are a data visualization assistant. Translate the user's plotting request into a single database SQL query and configuration parameters.
+    
+    Schema context:
+    {schema}
+    
+    Supported chart types: "bar", "line", "scatter", "pie".
+    
+    Return EXACTLY a valid JSON object conforming to this structure:
+    {{
+        "sql": "SELECT Column1, Column2 FROM ...",
+        "chart_config": {{
+            "type": "bar",
+            "x": "Column1",
+            "y": "Column2"
+        }}
+    }}
+    
+    Rule 1: The 'sql' attribute MUST contain a single, executable T-SQL query.
+    Rule 2: No markdown wraps (no ```json codeblocks), no introductory or conversational remarks. Output only the raw JSON.
+    """
+    
+    try:
+        response = ollama.chat(
+            model='qwen2.5-coder:7b-instruct-q8_0',
+            messages=[
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': user_prompt}
+            ],
+            format='json'
+        )
+        return json.loads(response['message']['content'])
+    except Exception as e:
+        print(f"Chart configuration spec error: {e}")
+        return None

@@ -1,6 +1,7 @@
 import streamlit as st
 import urllib.parse
 
+
 def render_powerbi(filter_string=""):
     """
     Render the Power BI dashboard.

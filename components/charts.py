@@ -7,7 +7,7 @@ def render_custom_chart(df, chart_config):
     x_col = chart_config.get("x")
     y_col = chart_config.get("y")
     
-    st.markdown("### ad-hoc data visualization")
+    st.markdown("### data visualization")
     
     try:
         if chart_type == "bar":
@@ -17,7 +17,6 @@ def render_custom_chart(df, chart_config):
         elif chart_type == "scatter":
             st.scatter_chart(df, x=x_col, y=y_col)
         elif chart_type == "pie":
-            # using plotly for pie charts since streamlit doesn't have st.pie_chart
             fig = px.pie(df, values=y_col, names=x_col)
             st.plotly_chart(fig, use_container_width=True)
         else:

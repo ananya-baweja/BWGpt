@@ -41,9 +41,41 @@ def render_sidebar(rename_dialog_func, dashboard_modal_func=None):
             # --- THE PERMANENT DASHBOARD BUTTON ---
             if dashboard_modal_func and st.button("📊 View Live Dashboard", use_container_width=True, type="primary"):
                 dashboard_modal_func()
+            
+            st.divider()
+            
+            # --- NAVIGATION WORKSPACE SWITCHER ---
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.get("app_view", "chat") == "chat" else "secondary"):
+                    st.session_state.app_view = "chat"
+                    st.rerun()
+            with col2:
+                if st.button("📊 AI Graphs", use_container_width=True, type="primary" if st.session_state.get("app_view") == "ai_dashboard" else "secondary"):
+                    st.session_state.app_view = "ai_dashboard"
+                    
+                    # Ensure we have a graph chat active when clicking the tab
+                    if st.session_state.current_chat not in st.session_state.get("graph_chats", []):
+                        base_name = "New Graph Chat"
+                        new_chat_name = base_name
+                        counter = 1
+                        while new_chat_name in st.session_state.chats:
+                            new_chat_name = f"{base_name} {counter}"
+                            counter += 1
+                        
+                        st.session_state.chats[new_chat_name] = []
+                        if "graph_chats" not in st.session_state:
+                            st.session_state.graph_chats = []
+                        st.session_state.graph_chats.append(new_chat_name)
+                        st.session_state.current_chat = new_chat_name
+                    
+                    st.rerun()
                 
+            # --- CONTEXT-AWARE NEW CHAT BUTTON ---
             if st.button("➕ New Chat", use_container_width=True, key="new_chat_top_btn", type="secondary"):
-                base_name = "New Chat"
+                is_graph_view = st.session_state.get("app_view") == "ai_dashboard"
+                base_name = "New Graph Chat" if is_graph_view else "New Chat"
+                
                 new_chat_name = base_name
                 counter = 1
                 while new_chat_name in st.session_state.chats:
@@ -54,6 +86,13 @@ def render_sidebar(rename_dialog_func, dashboard_modal_func=None):
                 updated_chats.update(st.session_state.chats)
                 st.session_state.chats = updated_chats
                 st.session_state.current_chat = new_chat_name
+                
+                # If generated from the graph view, register it as a graph chat
+                if is_graph_view:
+                    if "graph_chats" not in st.session_state:
+                        st.session_state.graph_chats = []
+                    st.session_state.graph_chats.append(new_chat_name)
+                    
                 st.rerun() 
                 
         # 2. SCROLLABLE HISTORY
@@ -68,10 +107,21 @@ def render_sidebar(rename_dialog_func, dashboard_modal_func=None):
             for chat_name in ordered_chats:
                 col_chat, col_menu = st.columns([4.5, 1.5])
                 with col_chat:
-                    display_label = f"📌 {chat_name}" if chat_name in pinned else chat_name
+                    is_graph = chat_name in st.session_state.get("graph_chats", [])
+                    
+                    # Add adaptive icons for graph history
+                    if is_graph:
+                        display_label = f"📌 📊 {chat_name}" if chat_name in pinned else f"📊 {chat_name}"
+                    else:
+                        display_label = f"📌 {chat_name}" if chat_name in pinned else chat_name
+                        
                     is_active = (chat_name == st.session_state.current_chat)
                     if st.button(display_label, use_container_width=True, key=f"switch_{chat_name}", type="secondary" if not is_active else "primary"):
                         st.session_state.current_chat = chat_name
+                        if is_graph:
+                            st.session_state.app_view = "ai_dashboard"
+                        else:
+                            st.session_state.app_view = "chat"
                         st.rerun()
                 with col_menu:
                     with st.popover("⋮", use_container_width=True, key=f"pop_{chat_name}"):
@@ -87,14 +137,21 @@ def render_sidebar(rename_dialog_func, dashboard_modal_func=None):
                             rename_dialog_func(chat_name)
                         if st.button("Delete", use_container_width=True, key=f"del_{chat_name}"):
                             del st.session_state.chats[chat_name]
+                            if "graph_chats" in st.session_state and chat_name in st.session_state.graph_chats:
+                                st.session_state.graph_chats.remove(chat_name)
                             if chat_name in st.session_state.pinned_chats: 
                                 st.session_state.pinned_chats.remove(chat_name)
                             if st.session_state.current_chat == chat_name:
                                 if len(st.session_state.chats) > 0: 
                                     st.session_state.current_chat = list(st.session_state.chats.keys())[0]
+                                    if st.session_state.current_chat in st.session_state.get("graph_chats", []):
+                                        st.session_state.app_view = "ai_dashboard"
+                                    else:
+                                        st.session_state.app_view = "chat"
                                 else:
                                     st.session_state.chats = {"New Chat": []}
                                     st.session_state.current_chat = "New Chat"
+                                    st.session_state.app_view = "chat"
                             st.rerun()
 
         # 3. TEAMS-STYLE PROFILE (FLEX PUSHED TO BOTTOM)

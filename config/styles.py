@@ -24,7 +24,7 @@ HIDE_ST_STYLE = """
     div[data-testid="stHorizontalBlock"]:has([data-testid="stChatInput"]) {
         position: fixed !important;
         bottom: 25px !important;
-        left: calc(50% + 70px);
+        left: calc(50% + 90px);
         transform: translateX(-50%) !important;
         width: 95% !important;
         max-width: 46rem !important; 
